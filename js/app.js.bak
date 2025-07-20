@@ -1,0 +1,877 @@
+// Плавная прокрутка для навигационных ссылок
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const href = this.getAttribute('href');
+        if (href && href !== '#') {
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        }
+    });
+});
+
+// Кнопка записи на приём
+const appointmentBtn = document.querySelector('.appointment-btn');
+const ctaButton = document.querySelector('.cta-button');
+
+[appointmentBtn, ctaButton].forEach(button => {
+    if (button) {
+        button.addEventListener('click', () => {
+            const contactsSection = document.querySelector('#contacts');
+            if (contactsSection) {
+                contactsSection.scrollIntoView({ behavior: 'smooth' });
+                const nameInput = document.querySelector('input[name="name"]');
+                if (nameInput) {
+                    setTimeout(() => nameInput.focus(), 1000);
+                }
+            }
+        });
+    }
+});
+
+// Обработка отправки формы записи на приём
+const appointmentForm = document.getElementById('appointment-form');
+if (appointmentForm) {
+    appointmentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Получаем данные формы
+        const formData = new FormData(this);
+        const formObject = {};
+        formData.forEach((value, key) => {
+            formObject[key] = value;
+        });
+
+        // Здесь можно добавить отправку данных на сервер
+        console.log('Данные записи:', formObject);
+        
+        // Очищаем форму
+        this.reset();
+        
+        // Показываем сообщение об успешной отправке
+        showNotification('Спасибо за вашу заявку! Мы свяжемся с вами в ближайшее время.');
+    });
+}
+
+// Функция показа уведомления
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    
+    // Стили для уведомления
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.backgroundColor = '#2ecc71';
+    notification.style.color = 'white';
+    notification.style.padding = '15px 25px';
+    notification.style.borderRadius = '5px';
+    notification.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
+    notification.style.zIndex = '1000';
+    
+    document.body.appendChild(notification);
+    
+    // Удаляем уведомление через 5 секунд
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
+    }, 5000);
+}
+
+// Анимация появления элементов при прокрутке
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in');
+            observer.unobserve(entry.target); // Прекращаем наблюдение после первого появления
+        }
+    });
+}, observerOptions);
+
+// Добавляем класс для анимации и начинаем наблюдение
+document.querySelectorAll('.service-card, .doctor-card, .about-content, .price-item').forEach(element => {
+    element.classList.add('animate');
+    observer.observe(element);
+});
+
+// Добавляем стили для анимации
+const style = document.createElement('style');
+style.textContent = `
+    .animate {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .fade-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`;
+document.head.appendChild(style);
+
+const simpleTranslations = {
+  ru: {
+    'appointment-btn': 'Заполнить анкету',
+    'call-button': 'Заказать звонок',
+    'nav-main': 'Главная',
+    'nav-services': 'Услуги - методы лечения',
+    'nav-prices': 'Цены',
+    'logo': 'Кафанова',
+    'footer-actual': 'Актуальное',
+    'footer-promos': 'Акции',
+    'footer-news': 'Новости',
+    'footer-support': 'Поддержка',
+    'footer-info': 'Информация',
+    'footer-about': 'О клинике',
+    'footer-contacts': 'Контакты',
+    'footer-reviews': 'Отзывы',
+    'footer-activity': 'Деятельность',
+    'footer-science': 'Научные работы',
+    'footer-patents': 'Патенты',
+    'sidebar-promos-text': 'Акции',
+    'sidebar-news-text': 'Новости',
+    'sidebar-support-text': 'Поддержка',
+    'sidebar-info-title': 'Информация',
+    'sidebar-about': 'О клинике',
+    'sidebar-contacts': 'Контакты',
+    'sidebar-reviews': 'Отзывы',
+    'sidebar-activity-title': 'Деятельность',
+    'sidebar-research': 'Научные работы',
+    'sidebar-patents': 'Патенты',
+    'on-this-page': 'На этой странице',
+    'faq-title': 'Часто задаваемые вопросы',
+    'where-we-work': 'Где мы работаем',
+    'welcome-title': 'Мы рады Вам',
+    'main-title': 'Центр лечения ДЦП и других заболеваний центральной нервной системы',
+    'slogan': 'От Сибири до любой точки мира.',
+    'toc-about': 'О клинике',
+    'toc-services': 'Услуги - методы лечения',
+    'toc-contacts': 'Контакты',
+    'toc-patents': 'Патенты',
+    'toc-research': 'Научные работы',
+    'toc-reviews': 'Отзывы',
+    'toc-news': 'Новости',
+    'toc-promos': 'Акции',
+    'prices-toc-about': 'Стоимость лечения',
+    'toc-faq': 'Часто задаваемые вопросы',
+    'toc-where-we-work': 'Где мы работаем',
+    'about-description': '',
+    'neurosurgery-info': 'Цены на некоторые виды лечения рассчитываются индивидуально. Чтобы узнать точную стоимость в вашем случае — просто позвоните нам. Мы объясним все без навязывания.',
+    'charity-support-info': 'Мы понимаем, что лечение может быть дорогостоящим, поэтому помогаем пациентам получить поддержку от благотворительных фондов. Это даёт возможность пройти лечение бесплатно! Позвоните нам.',
+    'faq-q1': 'С какими диагнозами вы работаете?',
+    'faq-q2': 'Можно ли пройти лечение бесплатно?',
+    'faq-q3': 'Вы принимаете пациентов из других регионов и стран?',
+    'faq-a1': 'Мы специализируемся на лечении детского церебрального паралича (ДЦП), травм головного и спинного мозга, последствий инсультов, органических поражений центральной нервной системы, аутизма и других неврологических состояний. Принимаем пациентов любого возраста — от новорождённых до взрослых.',
+    'faq-a2': '<code>У каждого случай индивидуален — позвоните нам, и мы проконсультируем вас.</code>',
+    'faq-a3': 'Да, мы помогаем пациентам получить поддержку от благотворительных фондов. Это может полностью покрыть стоимость лечения. Мы сопровождаем вас на всех этапах оформления заявки.<br><code>Уточните детали по вашему случаю — свяжитесь с нами по телефону.</code>',
+    'faq-a4': 'Да. Мы проводим лечение в городе Искитиме (Новосибирская область), но работаем с пациентами со всей России и из-за рубежа. Также возможен выезд специалистов в другие регионы и страны — география нашей помощи не имеет границ.<br><code>Позвоните нам — обсудим, как лучше организовать помощь именно в вашем случае.</code>',
+    'clinic-base': 'Наша работа организована на базе частной клиники «Санитас».',
+    'clinic-address': 'Россия, Новосибирская область, г. Искитим, ул. Молдавская, 50.',
+    'clinic-callout': 'Наши врачи выезжают по всей территории России и за её пределы.<br>Мы сопровождаем пациентов вне зависимости от их местонахождения — география нашей помощи не имеет границ.',
+    'cookie-notice-text': 'Этот сайт использует файлы <a href="https://www.cosmos.so/privacy-policy" target="_blank" class="cookie-notice-link" style="text-decoration:underline;text-underline-offset:6px;">cookies</a>.',
+    'cookie-accept-btn': 'Принять',
+    'footer-mobile-form-btn': 'Заполнить анкету',
+    'mobile-call-button': 'Заказать звонок',
+    'prices-welcome-title': 'Цены',
+    'prices-main-title': 'Перечень медицинских услуг с ценами',
+    'prices-main-title-en': 'List of medical services with prices',
+    'contacts-welcome-title': 'Контакты',
+    'contacts-main-title': 'Контакты',
+    'news-welcome-title': 'Новости',
+    'news-main-title': 'Центр лечения ДЦП и других заболеваний центральной нервной системы',
+    'patents-welcome-title': 'Патенты',
+    'patents-main-title': 'Патенты',
+    'promos-welcome-title': 'Акции',
+    'promos-main-title': 'Акции',
+    'research-welcome-title': 'Научные работы',
+    'research-main-title': 'Научные работы',
+    'reviews-welcome-title': 'Отзывы',
+    'reviews-main-title': 'Отзывы',
+    'services-main-title': 'Услуги - методы лечения',
+    'promos-warning': 'Обратите внимание: данная страница находится в процессе разработки. Полная функциональность и содержание будут добавлены позже.',
+    'index-about-description': 'Уже более 20 лет клиника занимается лечением детского церебрального паралича (ДЦП), травматических поражений головного мозга, последствий спинальных травм, аутизма, органических поражений центральной нервной системы и других сложных неврологических заболеваний.',
+    'index-neurosurgery-info': 'Проводим нейрохирургические операции любой категории сложности, в том числе работаем с новорожденными',
+    'about-description-prices': 'Некоторые методы лечения (в том числе нейрометаболическая терапия, стимуляция диафрагмы, антиоксидантные протоколы и др.) не имеют фиксированной цены. Это связано с тем, что объем, длительность и состав терапии подбираются строго <b>под диагноз, возраст, состояние пациента и сопутствующие заболевания.</b>',
+    'about-description-services': 'Для каждого диагноза используется один или несколько методов. Ниже — таблица соответствия заболеваний и применяемых подходов.',
+    'table-legend-services': '<strong>Обозначения:</strong><ul style="margin: 0.5em 0 0 1.2em; padding: 0; list-style: disc inside;"><li>✓ — метод применяется</li><li>⟳ — метод в стадии внедрения или ограниченно используется</li><li>(в ряде случаев / индивидуально) — по медицинским показаниям</li></ul>',
+    'service-card-1-title': 'Детский церебральный паралич',
+    'service-card-1-desc': 'Комплексная клеточная и нейротерапия',
+    'service-card-2-title': 'Эпилепсия',
+    'service-card-2-desc': 'Снижение приступов, метаболическая терапия',
+    'service-card-3-title': 'Аутизм',
+    'service-card-3-desc': 'Метаболическая поддержка, антиоксиданты',
+    'service-card-4-title': 'Последствия инсульта',
+    'service-card-4-desc': 'Восстановление функций, макрофаги',
+    'service-card-5-title': 'Черепно-мозговая травма',
+    'service-card-5-desc': 'Сознание, моторика, когнитивная реабилитация',
+    'service-card-6-title': 'Нейромышечные заболевания',
+    'service-card-6-desc': 'Стабилизация, поддержка, индивидуальные схемы',
+    'service-card-7-title': 'Синдром Ундины',
+    'service-card-7-desc': 'Диафрагмальный стимулятор, дыхательная поддержка',
+    'service-card-8-title': 'Паралич диафрагмы',
+    'service-card-8-desc': 'Электростимуляция дыхания',
+    'service-card-9-title': 'Квадриплегия',
+    'service-card-9-desc': 'Респираторная и двигательная реабилитация',
+    'treatments-th-disease': 'Заболевание',
+    'treatments-th-m2': 'М2 макрофаги',
+    'treatments-th-neurometabolic': 'Нейрометаболическая терапия',
+    'treatments-th-cytokines': 'Цитокины',
+    'treatments-th-antioxidant': 'Антиоксидантная терапия',
+    'treatments-th-diaphragm': 'Диафрагмальный стимулятор',
+    'treatments-td-dcp': 'Детский церебральный паралич (ДЦП)',
+    'treatments-td-epilepsy': 'Эпилепсия',
+    'treatments-td-autism': 'Аутизм',
+    'treatments-td-stroke': 'Последствия инсульта',
+    'treatments-td-tbi': 'Черепно-мозговая травма (ЧМТ)',
+    'treatments-td-neuromuscular': 'БАС, Кеннеди, СМА, Дюшенна и др.',
+    'treatments-td-ondine': 'Синдром Ундины / Центральное апноэ',
+    'treatments-td-diaphragm-paralysis': 'Паралич диафрагмы',
+    'treatments-td-quadriplegia': 'Квадриплегия',
+    'treatments-note-some-cases': '(в ряде случаев)',
+    'treatments-note-individual': '(индивидуально)',
+  },
+  en: {
+    'appointment-btn': 'Make Appointment',
+    'call-button': 'Request Call',
+    'nav-main': 'Main',
+    'nav-services': 'Services - Treatment Methods',
+    'nav-prices': 'Prices',
+    'logo': 'Kafanova',
+    'footer-actual': 'Current',
+    'footer-promos': 'Promotions',
+    'footer-news': 'News',
+    'footer-support': 'Support',
+    'footer-info': 'Information',
+    'footer-about': 'About Clinic',
+    'footer-contacts': 'Contacts',
+    'footer-reviews': 'Reviews',
+    'footer-activity': 'Activity',
+    'footer-science': 'Research',
+    'footer-patents': 'Patents',
+    'sidebar-promos-text': 'Promotions',
+    'sidebar-news-text': 'News',
+    'sidebar-support-text': 'Support',
+    'sidebar-info-title': 'Information',
+    'sidebar-about': 'About Clinic',
+    'sidebar-contacts': 'Contacts',
+    'sidebar-reviews': 'Reviews',
+    'sidebar-activity-title': 'Activity',
+    'sidebar-research': 'Research',
+    'sidebar-patents': 'Patents',
+    'on-this-page': 'On this page',
+    'faq-title': 'Frequently Asked Questions',
+    'where-we-work': 'Where we work',
+    'welcome-title': 'Welcome',
+    'main-title': 'Center for the Treatment of Cerebral Palsy and Other Central Nervous System Diseases',
+    'slogan': 'From Siberia to anywhere in the world.',
+    'toc-about': 'About Clinic',
+    'toc-services': 'Services - Treatment Methods',
+    'toc-contacts': 'Contacts',
+    'toc-patents': 'Patents',
+    'toc-research': 'Research',
+    'toc-reviews': 'Reviews',
+    'toc-news': 'News',
+    'toc-promos': 'Promotions',
+    'prices-toc-about': 'Treatment cost',
+    'toc-faq': 'Frequently Asked Questions',
+    'toc-where-we-work': 'Where we work',
+    'about-description': 'Some treatment methods (including neurometabolic therapy, diaphragm stimulation, antioxidant protocols, etc.) do not have a fixed price. This is because the volume, duration, and composition of therapy are selected strictly <b>according to the diagnosis, age, patient condition, and comorbidities.</b>',
+    'neurosurgery-info': 'Prices for some types of treatment are calculated individually. To find out the exact cost in your case, just call us — we will explain everything with no obligation.',
+    'charity-support-info': 'We understand that treatment can be expensive, so we help patients receive support from charitable foundations. This makes it possible to receive treatment for free! Call us.',
+    'faq-q1': 'What diagnoses do you work with?',
+    'faq-q2': 'Is it possible to receive treatment for free?',
+    'faq-q3': 'Do you accept patients from other regions and countries?',
+    'faq-a1': 'We specialize in the treatment of cerebral palsy (CP), brain and spinal cord injuries, consequences of strokes, organic lesions of the central nervous system, autism, and other neurological conditions. We accept patients of all ages — from newborns to adults.',
+    'faq-a2': '<code>Each case is individual — call us and we will consult you.</code>',
+    'faq-a3': 'Yes, we help patients receive support from charitable foundations. This can fully cover the cost of treatment. We assist you at all stages of the application process.<br><code>Clarify the details of your case — contact us by phone.</code>',
+    'faq-a4': 'Yes. We provide treatment in the city of Iskitim (Novosibirsk region), but we work with patients from all over Russia and abroad. It is also possible for specialists to travel to other regions and countries — the geography of our assistance has no boundaries.<br><code>Call us — we will discuss how best to organize help in your case.</code>',
+    'clinic-base': 'Our work is organized on the basis of a private clinic «Санитас».',
+    'clinic-address': 'Russia, Novosibirsk region, Iskitim, Moldavskaya st., 50.',
+    'clinic-callout': 'Our doctors travel throughout Russia and beyond.<br>We support patients regardless of their location — the geography of our assistance knows no boundaries.',
+    'cookie-notice-text': 'This site uses <a href="https://www.cosmos.so/privacy-policy" target="_blank" class="cookie-notice-link" style="text-decoration:underline;text-underline-offset:6px;">cookies</a>.',
+    'cookie-accept-btn': 'Accept',
+    'footer-mobile-form-btn': 'Fill out the form',
+    'mobile-call-button': 'Request a call',
+    'prices-welcome-title': 'Prices',
+    'prices-main-title': 'List of Medical Services with Prices',
+    'prices-toc-about': 'Treatment cost',
+    'contacts-welcome-title': 'Contacts',
+    'contacts-main-title': 'Contacts',
+    'news-welcome-title': 'News',
+    'news-main-title': 'Center for the Treatment of Cerebral Palsy and Other Central Nervous System Diseases',
+    'patents-welcome-title': 'Patents',
+    'patents-main-title': 'Patents',
+    'promos-welcome-title': 'Promotions',
+    'promos-main-title': 'Promotions',
+    'research-welcome-title': 'Research',
+    'research-main-title': 'Research',
+    'reviews-welcome-title': 'Reviews',
+    'reviews-main-title': 'Reviews',
+    'services-welcome-title': 'Services - Treatment Methods',
+    'services-main-title': 'Services - Treatment Methods',
+    'promos-warning': 'Please note: this page is under development. Full functionality and content will be added later.',
+    'index-about-description': 'For more than 20 years, the clinic has been treating cerebral palsy (CP), traumatic brain injuries, consequences of spinal injuries, autism, organic lesions of the central nervous system, and other complex neurological diseases.',
+    'index-neurosurgery-info': 'We perform neurosurgical operations of any complexity, including working with newborns.',
+    'about-description-prices': 'Some treatment methods (including neurometabolic therapy, diaphragm stimulation, antioxidant protocols, etc.) do not have a fixed price. This is because the volume, duration, and composition of therapy are selected strictly <b>according to the diagnosis, age, patient condition, and comorbidities.</b>',
+    'about-description-services': 'Each diagnosis uses one or more methods. Below is a table showing which diseases correspond to which treatment approaches.',
+    'table-legend-services': '<strong>Legend:</strong><ul style="margin: 0.5em 0 0 1.2em; padding: 0; list-style: disc inside;"><li>✓ — method is used</li><li>⟳ — method is being introduced or used in a limited way</li><li>(in some cases / individually) — according to medical indications</li></ul>',
+    'service-card-1-title': 'Cerebral Palsy',
+    'service-card-1-desc': 'Comprehensive cell and neurotherapy',
+    'service-card-2-title': 'Epilepsy',
+    'service-card-2-desc': 'Seizure reduction, metabolic therapy',
+    'service-card-3-title': 'Autism',
+    'service-card-3-desc': 'Metabolic support, antioxidants',
+    'service-card-4-title': 'Stroke Sequelae',
+    'service-card-4-desc': 'Function restoration, macrophages',
+    'service-card-5-title': 'Traumatic Brain Injury',
+    'service-card-5-desc': 'Consciousness, motor, cognitive rehabilitation',
+    'service-card-6-title': 'Neuromuscular Diseases',
+    'service-card-6-desc': 'Stabilization, support, individualized protocols',
+    'service-card-7-title': 'Ondine Syndrome',
+    'service-card-7-desc': 'Diaphragm stimulator, respiratory support',
+    'service-card-8-title': 'Diaphragm Paralysis',
+    'service-card-8-desc': 'Breathing electrostimulation',
+    'service-card-9-title': 'Quadriplegia',
+    'service-card-9-desc': 'Respiratory and motor rehabilitation',
+    'treatments-th-disease': 'Disease',
+    'treatments-th-m2': 'M2 Macrophages',
+    'treatments-th-neurometabolic': 'Neurometabolic Therapy',
+    'treatments-th-cytokines': 'Cytokines',
+    'treatments-th-antioxidant': 'Antioxidant Therapy',
+    'treatments-th-diaphragm': 'Diaphragm Stimulator',
+    'treatments-td-dcp': 'Cerebral Palsy (CP)',
+    'treatments-td-epilepsy': 'Epilepsy',
+    'treatments-td-autism': 'Autism',
+    'treatments-td-stroke': 'Stroke Sequelae',
+    'treatments-td-tbi': 'Traumatic Brain Injury (TBI)',
+    'treatments-td-neuromuscular': 'ALS, Kennedy, SMA, Duchenne, etc.',
+    'treatments-td-ondine': 'Ondine Syndrome / Central Apnea',
+    'treatments-td-diaphragm-paralysis': 'Diaphragm Paralysis',
+    'treatments-td-quadriplegia': 'Quadriplegia',
+    'treatments-note-some-cases': '(in some cases)',
+    'treatments-note-individual': '(individually)',
+  }
+};
+
+function setSimpleLang(lang) {
+  localStorage.setItem('site-lang', lang);
+  document.documentElement.setAttribute('lang', lang);
+  const ids = Object.keys(simpleTranslations[lang]);
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && simpleTranslations[lang][id]) {
+      if (id === 'slogan') {
+        // Меняем только текстовые узлы до и после span
+        // Ожидается структура: "От <span>Сибири</span> до любой точки мира."
+        const span = el.querySelector('span');
+        if (span) {
+          // Получаем перевод
+          const translation = simpleTranslations[lang][id];
+          // Разбиваем перевод на части вокруг слова 'Сибири'/'Siberia'
+          // Для RU: 'От Сибири до любой точки мира.'
+          // Для EN: 'From Siberia to anywhere in the world.'
+          let before = '', after = '';
+          if (lang === 'ru') {
+            before = translation.split('Сибири')[0];
+            after = translation.split('Сибири')[1];
+            span.textContent = 'Сибири';
+          } else {
+            before = translation.split('Siberia')[0];
+            after = translation.split('Siberia')[1];
+            span.textContent = 'Siberia';
+          }
+          // Удаляем все текстовые узлы вокруг span
+          Array.from(el.childNodes).forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) node.remove();
+          });
+          // Вставляем новый текст до и после span
+          el.insertBefore(document.createTextNode(before), span);
+          if (span.nextSibling) span.nextSibling.textContent = after;
+          else el.appendChild(document.createTextNode(after));
+        } else {
+          el.textContent = translation;
+        }
+      } else if (
+        id === 'faq-a2' || id === 'faq-a3' || id === 'faq-a4' ||
+        id === 'clinic-callout' || id === 'cookie-notice-text' ||
+        id === 'about-description' || id === 'about-description-prices' ||
+        id === 'about-description-services' || id === 'table-legend-services' ||
+        id === 'promos-warning' ||
+        /^service-card-\d+-title$/.test(id) || /^service-card-\d+-desc$/.test(id) ||
+        /^treatments-th-/.test(id) || /^treatments-td-/.test(id)
+      ) {
+        el.innerHTML = simpleTranslations[lang][id];
+      } else {
+        el.textContent = simpleTranslations[lang][id];
+      }
+    } else {
+      // console.log('Element not found or translation missing for', id); // debug
+    }
+  });
+  // Toggle prices-main-title and prices-main-title-en for the prices page
+  var ruTitle = document.getElementById('prices-main-title');
+  var enTitle = document.getElementById('prices-main-title-en');
+  if (ruTitle && enTitle) {
+    if (lang === 'ru') {
+      ruTitle.style.display = '';
+      enTitle.style.display = 'none';
+    } else {
+      ruTitle.style.display = 'none';
+      enTitle.style.display = '';
+    }
+  }
+  // Always update TOC text after language switch
+  updateTOCText(lang);
+  // Toggle on-this-page and on-this-page-en in the TOC
+  var otpRu = document.querySelector('#on-this-page span');
+  var otpEn = document.getElementById('on-this-page-en');
+  if (otpRu && otpEn) {
+    if (lang === 'ru') {
+      otpRu.style.display = '';
+      otpEn.style.display = 'none';
+    } else {
+      otpRu.style.display = 'none';
+      otpEn.style.display = '';
+    }
+  }
+  // Переключение кнопки
+  const btn = document.getElementById('lang-toggle');
+  if (btn) {
+    btn.querySelector('#lang-ru').style.display = lang === 'ru' ? 'inline' : 'none';
+    btn.querySelector('#lang-en').style.display = lang === 'en' ? 'inline' : 'none';
+  }
+  const btnMobile = document.getElementById('lang-toggle-mobile');
+  if (btnMobile) {
+    btnMobile.querySelector('#lang-ru-mobile').style.display = lang === 'ru' ? 'inline' : 'none';
+    btnMobile.querySelector('#lang-en-mobile').style.display = lang === 'en' ? 'inline' : 'none';
+  }
+
+  // Переключение всех data-lang элементов (например, для таблиц)
+  document.querySelectorAll('[data-lang="ru"]').forEach(function(el) {
+    el.style.display = (lang === 'ru') ? '' : 'none';
+  });
+  document.querySelectorAll('[data-lang="en"]').forEach(function(el) {
+    el.style.display = (lang === 'en') ? '' : 'none';
+  });
+  // --- TOC highlight fix after language switch ---
+  // Try to re-apply .toc-active to the correct TOC item
+  setTimeout(function() {
+    var toc = document.getElementById('table-of-contents');
+    if (!toc) return;
+    var tocLinks = toc.querySelectorAll('a[href^="#"]');
+    function clearActive() {
+      toc.querySelectorAll('.toc-active').forEach(el => el.classList.remove('toc-active'));
+    }
+    function setActive(id) {
+      clearActive();
+      var li = toc.querySelector(`a[href="#${id}"]`)?.parentElement;
+      if (li) li.classList.add('toc-active');
+    }
+    // Use hash if present, else highlight first TOC item
+    var hash = window.location.hash;
+    if (hash) {
+      setActive(hash.slice(1));
+    } else if (tocLinks.length) {
+      var firstId = tocLinks[0].getAttribute('href').slice(1);
+      setActive(firstId);
+    }
+  }, 50);
+}
+
+// --- TOC logic as a function ---
+function setupTOCHighlight() {
+  const toc = document.getElementById('table-of-contents');
+  if (!toc) return;
+  const tocLinks = toc.querySelectorAll('a[href^="#"]');
+  const sectionIds = Array.from(tocLinks).map(link => link.getAttribute('href').slice(1));
+  const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+  if (!sections.length) return;
+
+  function clearActive() {
+    toc.querySelectorAll('.toc-active').forEach(el => el.classList.remove('toc-active'));
+  }
+
+  function setActive(id) {
+    clearActive();
+    const li = toc.querySelector(`a[href="#${id}"]`)?.parentElement;
+    if (li) li.classList.add('toc-active');
+  }
+
+  // Remove previous listeners to avoid duplicates
+  tocLinks.forEach(link => {
+    link.replaceWith(link.cloneNode(true));
+  });
+  const newTocLinks = toc.querySelectorAll('a[href^="#"]');
+  newTocLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      if (this.hash) {
+        const targetId = this.hash.slice(1);
+        const target = document.getElementById(targetId);
+        if (target) {
+          e.preventDefault();
+          const headerOffset = 152;
+          const elementPosition = target.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = elementPosition - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+          setActive(targetId);
+          history.pushState(null, '', this.hash);
+        }
+      }
+    });
+  });
+
+  // Intersection Observer
+  let ticking = false;
+  let lastActiveId = null;
+  const observer = new IntersectionObserver((entries) => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        let visibleSections = entries.filter(e => e.isIntersecting && e.intersectionRatio > 0);
+        if (visibleSections.length) {
+          visibleSections.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+          const id = visibleSections[0].target.id;
+          if (id !== lastActiveId) {
+            setActive(id);
+            lastActiveId = id;
+          }
+        } else {
+          clearActive();
+          lastActiveId = null;
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, {
+    rootMargin: '-160px 0px -60% 0px',
+    threshold: [0, 0.2, 0.5, 1]
+  });
+  sections.forEach(section => {
+    if (section) observer.observe(section);
+  });
+  if (window.location.hash) {
+    setActive(window.location.hash.slice(1));
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработка кликов по карточкам отзывов
+    const reviewCards = document.querySelectorAll('.review-card');
+    if (reviewCards.length > 0) {
+        reviewCards.forEach(card => {
+            card.addEventListener('click', function() {
+                this.classList.toggle('expanded');
+            });
+        });
+    }
+
+    // Обработка кнопки "Показать еще отзывы"
+    const showMoreBtn = document.querySelector('.show-more-btn');
+    const hiddenReviews = document.querySelectorAll('.review-card.hidden');
+
+    if (showMoreBtn && hiddenReviews.length > 0) {
+        showMoreBtn.addEventListener('click', function() {
+            hiddenReviews.forEach(review => {
+                review.classList.remove('hidden');
+            });
+            this.style.display = 'none';
+        });
+    }
+
+    // Обработка модальных окон
+    const modals = document.querySelectorAll('.modal');
+    
+    if (modals.length > 0) {
+        modals.forEach(modal => {
+            // Получаем кнопку закрытия для каждого модального окна
+            const closeBtn = modal.querySelector('.close-modal');
+            
+            // Обработчик клика по кнопке закрытия
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+            
+            // Обработчик клика по затемненной области
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    // Обработчик для кнопки "Заполнить анкету"
+    const questionnaireBtn = document.querySelector('.questionnaire-btn');
+    if (questionnaireBtn) {
+        questionnaireBtn.addEventListener('click', function() {
+            const questionnaireModal = document.getElementById('questionnaireModal');
+            if (questionnaireModal) {
+                questionnaireModal.style.display = 'block';
+            }
+        });
+    }
+
+    // Обработчик для кнопки заказа звонка
+    const callButton = document.querySelector('.call-button');
+    if (callButton) {
+        callButton.addEventListener('click', function() {
+            const callModal = document.getElementById('callModal');
+            if (callModal) {
+                callModal.style.display = 'block';
+            }
+        });
+    }
+
+    // Обработчик для кнопки записи на приём
+    const appointmentBtn = document.querySelector('.btn-main');
+    if (appointmentBtn) {
+        appointmentBtn.addEventListener('click', function() {
+            const appointmentModal = document.getElementById('appointmentModal');
+            if (appointmentModal) {
+                appointmentModal.style.display = 'block';
+            }
+        });
+    }
+
+    // Обработка формы записи на приём
+    const appointmentForm = document.getElementById('appointmentForm');
+    if (appointmentForm) {
+        appointmentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Получаем данные формы
+            const formData = new FormData(this);
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            // Здесь можно добавить отправку данных на сервер
+            console.log('Данные записи на приём:', formObject);
+            
+            // Очищаем форму
+            this.reset();
+            
+            // Закрываем модальное окно
+            const appointmentModal = document.getElementById('appointmentModal');
+            if (appointmentModal) {
+                appointmentModal.style.display = 'none';
+            }
+            
+            // Показываем сообщение об успешной отправке
+            showNotification('Спасибо за вашу заявку! Мы свяжемся с вами в ближайшее время.');
+        });
+    }
+
+    // Функциональность переключения темы
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // Проверяем сохраненную тему при загрузке
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+        themeToggle.checked = true;
+    }
+    
+    // Обработчик переключения темы
+    if (themeToggle) {
+        themeToggle.addEventListener('change', function() {
+            // Добавляем класс для отключения анимаций
+            document.documentElement.classList.add('changing-theme');
+            
+            if (this.checked) {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+            
+            // Убираем класс через небольшую задержку
+            setTimeout(() => {
+                document.documentElement.classList.remove('changing-theme');
+            }, 100);
+        });
+    }
+
+    // Функциональность переключения языка через кастомное меню
+    // Удалено: languageDropdowns, все обработчики старой системы
+
+    // Обработка выпадающих меню для контактов
+    const contactsDropdown = document.querySelector('.contacts-dropdown .header__language');
+    
+    if (contactsDropdown) {
+        const link = contactsDropdown.querySelector('.header__language__link');
+        const contactText = contactsDropdown.querySelector('.contact-text');
+        const contactIcon = contactsDropdown.querySelector('.contacts-dropdown__flag');
+        
+        if (link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                contactsDropdown.classList.toggle('active');
+            });
+        }
+        
+        // Обработчики выбора контакта
+        const contactButtons = contactsDropdown.querySelectorAll('.contact-option');
+        contactButtons.forEach(contactButton => {
+            contactButton.addEventListener('click', function(e) {
+                // Если это ссылка (ВКонтакте) - позволяем переход
+                if (this.tagName === 'A') {
+                    return;
+                }
+                
+                e.preventDefault();
+                
+                // Ищем span с текстом
+                const spans = this.querySelectorAll('span');
+                let selectedText;
+                
+                // Для телефона (3 span) и email (2 span) разная структура
+                if (spans.length === 3) {
+                    selectedText = spans[2].textContent; // Третий span для телефона
+                } else {
+                    selectedText = spans[1].textContent; // Второй span для email
+                }
+                
+                const selectedIcon = this.querySelector('.contacts-dropdown__flag');
+                
+                // Обновляем отображаемый контакт
+                contactText.textContent = selectedText;
+                contactIcon.innerHTML = selectedIcon.innerHTML;
+                
+                // Убираем активный класс у всех кнопок
+                contactButtons.forEach(button => button.classList.remove('active'));
+                
+                // Добавляем активный класс к выбранной кнопке
+                this.classList.add('active');
+                
+                // Закрываем выпадающее меню
+                contactsDropdown.classList.remove('active');
+            });
+        });
+        
+        // Закрытие при клике вне меню
+        document.addEventListener('click', function(e) {
+            if (!contactsDropdown.contains(e.target)) {
+                contactsDropdown.classList.remove('active');
+            }
+        });
+    }
+
+    // --- Новый обработчик для переключателя языка ---
+    const savedLang = localStorage.getItem('site-lang') || 'ru';
+    setSimpleLang(savedLang);
+    const btn = document.getElementById('lang-toggle');
+    if (btn) btn.onclick = function() { setSimpleLang(localStorage.getItem('site-lang') === 'ru' ? 'en' : 'ru'); };
+    const btnMobile = document.getElementById('lang-toggle-mobile');
+    if (btnMobile) btnMobile.onclick = function() { setSimpleLang(localStorage.getItem('site-lang') === 'ru' ? 'en' : 'ru'); };
+
+    setupTOCHighlight();
+
+    // Cookie notice logic (moved from inline HTML)
+    var cookieNotice = document.getElementById('cookie-notice');
+    var acceptBtn = document.getElementById('cookie-accept-btn');
+    var closeBtn = document.getElementById('cn-close-notice');
+
+    function hideCookieNotice() {
+      if (cookieNotice) cookieNotice.style.display = 'none';
+    }
+    function setCookie(name, value, days) {
+      var expires = '';
+      if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = '; expires=' + date.toUTCString();
+      }
+      document.cookie = name + '=' + (value || '')  + expires + '; path=/';
+    }
+    function getCookie(name) {
+      var nameEQ = name + '=';
+      var ca = document.cookie.split(';');
+      for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+    }
+    if (getCookie('cookie_notice_accepted') === '1') {
+      hideCookieNotice();
+    } else {
+      if (acceptBtn) acceptBtn.onclick = function(e) {
+        e.preventDefault();
+        setCookie('cookie_notice_accepted', '1', 365);
+        hideCookieNotice();
+      };
+      if (closeBtn) closeBtn.onclick = function() {
+        setCookie('cookie_notice_accepted', '1', 365);
+        hideCookieNotice();
+      };
+    }
+});
+
+// After language switch, re-setup TOC logic
+const origSetSimpleLang = setSimpleLang;
+setSimpleLang = function(lang) {
+  origSetSimpleLang(lang);
+  updateTOCText(lang); // force update after any DOM changes
+  setupTOCHighlight();
+};
+
+// Helper: update TOC text for 'Стоимость лечения'/'Treatment cost'
+function updateTOCText(lang) {
+  var tocText = document.getElementById('prices-toc-about-text');
+  if (tocText) {
+    tocText.textContent = lang === 'ru' ? 'Стоимость лечения' : 'Treatment cost';
+  }
+}
+
+// Удалено: translatePage, translations, languageDropdowns, data-translate, все обработчики старой системы
+
+// Обработка формы заказа звонка
+const callForm = document.getElementById('callForm');
+if (callForm) {
+    callForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Получаем данные формы
+        const formData = new FormData(this);
+        const formObject = {};
+        formData.forEach((value, key) => {
+            formObject[key] = value;
+        });
+
+        // Здесь можно добавить отправку данных на сервер
+        console.log('Данные заказа звонка:', formObject);
+        
+        // Очищаем форму
+        this.reset();
+        
+        // Закрываем модальное окно
+        const callModal = document.getElementById('callModal');
+        if (callModal) {
+            callModal.style.display = 'none';
+        }
+        
+        // Показываем сообщение об успешной отправке
+        showNotification('Спасибо за вашу заявку! Мы свяжемся с вами в ближайшее время.');
+    });
+} 
